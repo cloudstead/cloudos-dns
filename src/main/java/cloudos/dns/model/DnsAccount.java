@@ -14,7 +14,7 @@ import org.cobbzilla.wizard.model.UniquelyNamedEntity;
 import javax.persistence.Entity;
 
 @Entity @Accessors(chain=true) @ToString(callSuper=true)
-public class DnsAccount extends UniquelyNamedEntity<DnsAccount> implements Scrubbable {
+public class DnsAccount extends UniquelyNamedEntity implements Scrubbable {
 
     private static final ScrubbableField[] SCRUBBABLE = new ScrubbableField[]{
             new ScrubbableField(DnsAccount.class, "password", String.class)

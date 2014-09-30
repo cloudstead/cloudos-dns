@@ -85,7 +85,7 @@ public class DnsResource {
         }
 
         final String password = randomAlphanumeric(10);
-        accountDAO.create(new DnsAccount().setName(name).setPassword(new HashedPassword(password)));
+        accountDAO.create(new DnsAccount().setPassword(new HashedPassword(password))).setName(name);
 
         return Response.ok(new DnsUserResponse(name, password)).build();
     }
