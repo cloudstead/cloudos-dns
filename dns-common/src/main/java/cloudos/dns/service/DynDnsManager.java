@@ -1,7 +1,7 @@
 package cloudos.dns.service;
 
-import cloudos.dns.resources.DnsResource;
-import cloudos.dns.server.DynDnsConfiguration;
+import cloudos.dns.DnsApiConstants;
+import cloudos.dns.config.DynDnsConfiguration;
 import com.dyn.client.v3.traffic.DynTrafficApi;
 import com.dyn.client.v3.traffic.domain.CreateRecord;
 import com.dyn.client.v3.traffic.domain.Job;
@@ -103,7 +103,7 @@ public class DynDnsManager implements DnsManager {
                 break;
             case MX:
                 if (!value.endsWith(".")) value += ".";
-                int rank = record.getIntOption("rank", DnsResource.DEFAULT_MX_RANK);
+                int rank = record.getIntOption("rank", DnsApiConstants.DEFAULT_MX_RANK);
                 create = CreateRecord.<MXData>builder().type("MX").fqdn(fqdn).ttl(ttl).rdata(MXData.mx(rank, value)).build();
                 break;
             case NS:

@@ -1,4 +1,4 @@
-package cloudos.dns.server;
+package cloudos.dns.config;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

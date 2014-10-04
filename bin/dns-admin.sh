@@ -3,7 +3,7 @@
 BASE=$(cd $(dirname $0) && pwd)
 
 JAR_PATTERN="cloudos-dns-*.jar"
-JAR_DIR="${BASE}/../target"
+JAR_DIR="${BASE}/../dns-server/target"
 
 JAR="$(find ${JAR_DIR} -maxdepth 1 -type f -name ${JAR_PATTERN})"
 NUM_JARS=$(find ${JAR_DIR} -maxdepth 1 -type f -name ${JAR_PATTERN} | wc -l | tr -d ' ')

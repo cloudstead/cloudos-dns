@@ -14,7 +14,7 @@ import org.cobbzilla.wizard.client.ApiClientBase;
 import java.util.Arrays;
 import java.util.List;
 
-import static cloudos.dns.resources.DnsResource.*;
+import static cloudos.dns.DnsApiConstants.*;
 import static org.cobbzilla.util.json.JsonUtil.fromJson;
 import static org.cobbzilla.util.json.JsonUtil.toJson;
 

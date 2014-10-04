@@ -24,18 +24,10 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-@Path(DnsResource.ENDPOINT)
+@Path(DnsApiConstants.ENDPOINT)
 @Service
 @Slf4j
 public class DnsResource {
-
-    public static final int DEFAULT_MX_RANK = 10;
-
-    public static final String ENDPOINT = "/dns";
-    public static final String EP_LIST = "/list";
-    public static final String EP_UPDATE = "/update";
-    public static final String EP_DELETE = "/delete";
-    public static final String EP_USER = "/user";
 
     @Autowired private DnsServerConfiguration configuration;
     @Autowired private DnsAccountDAO accountDAO;
@@ -61,7 +53,7 @@ public class DnsResource {
     }
 
     @POST
-    @Path(EP_USER + "/{name}")
+    @Path(DnsApiConstants.EP_USER + "/{name}")
     public Response createUser (@HeaderParam(DnsApiConstants.H_API_KEY) String apiKey,
                                 @PathParam("name") String name) {
 
@@ -91,7 +83,7 @@ public class DnsResource {
     }
 
     @POST
-    @Path(EP_LIST)
+    @Path(DnsApiConstants.EP_LIST)
     public Response list (@HeaderParam(DnsApiConstants.H_API_KEY) String apiKey,
                           DnsRecordMatch match) {
 
@@ -109,7 +101,7 @@ public class DnsResource {
     }
 
     @POST
-    @Path(EP_UPDATE)
+    @Path(DnsApiConstants.EP_UPDATE)
     public Response writeRecord(@HeaderParam(DnsApiConstants.H_API_KEY) String apiKey,
                                 DnsRecord record) {
 
@@ -140,7 +132,7 @@ public class DnsResource {
     }
 
     @POST
-    @Path(EP_DELETE)
+    @Path(DnsApiConstants.EP_DELETE)
     public Response removeRecords(@HeaderParam(DnsApiConstants.H_API_KEY) String apiKey,
                                   DnsRecordMatch match) {
 

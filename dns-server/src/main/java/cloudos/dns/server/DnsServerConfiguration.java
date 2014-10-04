@@ -1,5 +1,6 @@
 package cloudos.dns.server;
 
+import cloudos.dns.config.DynDnsConfiguration;
 import cloudos.dns.service.DynDnsManager;
 import lombok.Getter;
 import lombok.Setter;
