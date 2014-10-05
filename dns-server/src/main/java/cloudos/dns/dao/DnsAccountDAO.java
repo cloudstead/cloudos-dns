@@ -1,12 +1,8 @@
 package cloudos.dns.dao;
 
 import cloudos.dns.model.DnsAccount;
-import org.cobbzilla.util.collection.MapBuilder;
 import org.cobbzilla.wizard.dao.UniquelyNamedEntityDAO;
-import org.cobbzilla.wizard.validation.UniqueValidatorDaoHelper;
 import org.springframework.stereotype.Repository;
-
-import java.util.Map;
 
 @Repository public class DnsAccountDAO extends UniquelyNamedEntityDAO<DnsAccount> {
 
@@ -15,12 +11,4 @@ import java.util.Map;
         return found.getPassword().isCorrectPassword(password) ? found : null;
     }
 
-    @Override
-    protected Map<String, UniqueValidatorDaoHelper.Finder<DnsAccount>> getUniqueHelpers() {
-        return MapBuilder.build(new Object[][]{
-                {"name", new UniqueValidatorDaoHelper.Finder<DnsAccount>() {
-                    @Override public DnsAccount find(Object query) { return findByName(query.toString()); }
-                }}
-        });
-    }
 }
