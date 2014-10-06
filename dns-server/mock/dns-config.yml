@@ -1,0 +1,45 @@
+# Things in {{CURLIES}} will be read from the process environment when the server starts up.
+# The jrun launcher will typically load these from ~/.cloudos-dns.env
+
+serverName: cloudos-dns
+
+#publicUriBase: https://127.0.0.1
+publicUriBase: {{PUBLIC_BASE_URI}}
+
+bcryptRounds: 4
+springContextPath: classpath:/spring.xml
+
+dataKey: {{SESSION_DATAKEY}}
+
+database:
+  driver: org.postgresql.Driver
+  url: jdbc:postgresql://127.0.0.1:5432/cloudos_dns_test
+  user: cloudos_dns
+  password: {{CLOUDOS_DNS_DB_PASS}}
+
+  hibernate:
+    entityPackages: [ cloudos.dns.model ]
+    dialect: org.hibernate.dialect.PostgreSQLDialect
+    showSql: true
+    hbm2ddlAuto: create
+    validationMode: ddl
+
+http:
+  port: 5001
+  baseUri: /api
+
+jersey:
+  resourcePackages: [ cloudos.dns.mock, org.cobbzilla.wizard.server, org.cobbzilla.wizard.filters ]
+  responseFilters: [ org.cobbzilla.wizard.filters.ScrubbableScrubber ]
+
+#rooty:
+#  queueName: {{ROOTY_QUEUE_NAME}} # matches where rooty reads from, defined in /etc/rooty/*.yml (from cloudstead chef recipe)
+#  secret: {{ROOTY_SECRET}}        # used to generate hashes in request filenames
+#  handlers:
+#    rooty.toots.djbdns.DnsHandler:
+
+dyndns:
+  account: _fail
+  user: _fail
+  password: _fail
+  zone: {{DYNDNS_ZONE}}  # this is still used in the mock code, so we keep it

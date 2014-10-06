@@ -10,4 +10,6 @@ public class DnsApiConstants {
     public static final String EP_DELETE = "/delete";
     public static final String EP_USER = "/user";
     public static final int DEFAULT_MX_RANK = 10;
+
+    public static final String MOCK_ENDPOINT = "/mock/dns";
 }

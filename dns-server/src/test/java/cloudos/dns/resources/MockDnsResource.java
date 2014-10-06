@@ -1,12 +1,13 @@
 package cloudos.dns.resources;
 
 import cloudos.dns.DnsApiConstants;
-import cloudos.dns.dao.DnsAccountDAO;
 import cloudos.dns.dao.SessionDAO;
 import cloudos.dns.model.DnsAccount;
 import cloudos.dns.model.support.DnsSessionRequest;
 import cloudos.dns.model.support.DnsUserResponse;
 import cloudos.dns.server.DnsServerConfiguration;
+import cloudos.dns.service.mock.MockDnsManager;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.cobbzilla.util.dns.DnsManager;
 import org.cobbzilla.util.dns.DnsRecord;
@@ -19,18 +20,22 @@ import org.springframework.stereotype.Service;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-@Path(DnsApiConstants.ENDPOINT)
+@Path(DnsApiConstants.MOCK_ENDPOINT)
 @Service @Slf4j
-public class DnsResource {
+public class MockDnsResource {
 
     @Autowired private DnsServerConfiguration configuration;
-    @Autowired private DnsAccountDAO accountDAO;
     @Autowired private SessionDAO sessionDAO;
+
+    private Map<String, DnsAccount> accounts = new ConcurrentHashMap<>();
+    @Getter private MockDnsManager dnsManager = new MockDnsManager();
 
     @GET
     public Response hello () throws Exception {
@@ -46,8 +51,12 @@ public class DnsResource {
         String user = request.getUser();
         if (user.endsWith(zone)) user = user.substring(0, user.length() - zone.length());
 
-        final DnsAccount account = accountDAO.findByNameAndPassword(user, request.getPassword());
-        if (account == null) return ResourceUtil.notFound();
+        DnsAccount account = accounts.get(user);
+        if (account == null) {
+            account = (DnsAccount) new DnsAccount().setPassword(new HashedPassword(request.getPassword())).setName(user);
+            accounts.put(user, account);
+        }
+        if (!account.getPassword().isCorrectPassword(request.getPassword())) return ResourceUtil.notFound();
         return Response.ok(sessionDAO.create(account)).build();
     }
 
@@ -56,7 +65,7 @@ public class DnsResource {
     public Response createUser (@HeaderParam(DnsApiConstants.H_API_KEY) String apiKey,
                                 @PathParam("name") String name) {
 
-        final DnsAccount account = sessionDAO.find(apiKey);
+        DnsAccount account = sessionDAO.find(apiKey);
         if (account == null) return ResourceUtil.forbidden();
         if (!account.isAdmin()) return ResourceUtil.forbidden();
 
@@ -69,14 +78,14 @@ public class DnsResource {
         if (name.isEmpty() || name.length() > 63) return ResourceUtil.invalid("err.name.length");
         if (!name.matches("[A-Za-z0-9\\-]+") || name.startsWith("-")) return ResourceUtil.invalid("err.name.invalid");
 
-        final DnsAccount existing = accountDAO.findByName(name);
+        final DnsAccount existing = accounts.get(name);
         if (existing != null) {
-            log.warn("Overwriting existing account: "+existing);
-            accountDAO.delete(existing.getUuid());
+            log.warn("Overwriting existing account: " + existing);
         }
 
         final String password = randomAlphanumeric(10);
-        accountDAO.create((DnsAccount) new DnsAccount().setPassword(new HashedPassword(password)).setName(name));
+        account = (DnsAccount) new DnsAccount().setPassword(new HashedPassword(password)).setName(name);
+        accounts.put(name, account);
 
         return Response.ok(new DnsUserResponse(name, password)).build();
     }
@@ -92,7 +101,7 @@ public class DnsResource {
         if (!account.isAdmin()) match.setSubdomain(account.getName()+"."+configuration.getDyndns().getZone());
 
         try {
-            return Response.ok(configuration.getDnsManager().list(match)).build();
+            return Response.ok(getDnsManager().list(match)).build();
         } catch (Exception e) {
             log.error("error listing records: "+e, e);
             return Response.serverError().build();
@@ -115,7 +124,7 @@ public class DnsResource {
         }
 
         try {
-            final DnsManager dnsManager = configuration.getDnsManager();
+            final DnsManager dnsManager = getDnsManager();
             final boolean updated;
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (dnsManager) {
@@ -141,7 +150,7 @@ public class DnsResource {
         if (!account.isAdmin()) match.setSubdomain(account.getName()+"."+configuration.getDyndns().getZone());
 
         try {
-            final DnsManager dnsManager = configuration.getDnsManager();
+            final DnsManager dnsManager = getDnsManager();
             int removed;
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (dnsManager) {
@@ -155,5 +164,4 @@ public class DnsResource {
             return Response.serverError().build();
         }
     }
-
 }
