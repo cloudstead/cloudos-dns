@@ -57,7 +57,7 @@ public class MockDnsResource {
             account.initUuid();
             accounts.put(user, account);
         }
-        if (!account.getPassword().isCorrectPassword(request.getPassword())) return ResourceUtil.notFound();
+        if (account.getPassword() != null && !account.getPassword().isCorrectPassword(request.getPassword())) return ResourceUtil.notFound();
         return Response.ok(sessionDAO.create(account)).build();
     }
 
