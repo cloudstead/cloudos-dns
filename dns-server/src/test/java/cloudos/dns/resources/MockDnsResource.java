@@ -54,6 +54,7 @@ public class MockDnsResource {
         DnsAccount account = accounts.get(user);
         if (account == null) {
             account = (DnsAccount) new DnsAccount().setPassword(new HashedPassword(request.getPassword())).setName(user);
+            account.initUuid();
             accounts.put(user, account);
         }
         if (!account.getPassword().isCorrectPassword(request.getPassword())) return ResourceUtil.notFound();
@@ -85,6 +86,7 @@ public class MockDnsResource {
 
         final String password = randomAlphanumeric(10);
         account = (DnsAccount) new DnsAccount().setPassword(new HashedPassword(password)).setName(name);
+        account.initUuid();
         accounts.put(name, account);
 
         return Response.ok(new DnsUserResponse(name, password)).build();
