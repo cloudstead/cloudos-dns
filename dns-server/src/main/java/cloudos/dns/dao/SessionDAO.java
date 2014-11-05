@@ -15,7 +15,7 @@ public class SessionDAO extends AbstractSessionDAO<DnsAccount> {
 
     @Override protected String getPassphrase() { return configuration.getDataKey(); }
 
-    protected String toJson(DnsAccount account) throws Exception { return super.toJson(account.setPassword(null)); }
-    protected DnsAccount fromJson(String json) throws Exception { return super.fromJson(json).setPassword(null); }
+    protected String toJson(DnsAccount account) { return super.toJson(account.setPassword(null)); }
+    protected DnsAccount fromJson(String json) { return super.fromJson(json).setPassword(null); }
 
 }
