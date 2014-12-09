@@ -14,7 +14,7 @@ dataKey: {{SESSION_DATAKEY}}
 database:
   driver: org.postgresql.Driver
   url: jdbc:postgresql://127.0.0.1:5432/cloudos_dns_test
-  user: cloudos_dns
+  user: cloudos_dns_test
   password: {{CLOUDOS_DNS_DB_PASS}}
 
   hibernate:
