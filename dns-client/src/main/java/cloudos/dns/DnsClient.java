@@ -33,9 +33,13 @@ public class DnsClient extends ApiClientBase implements DnsManager {
         // for now, noop -- all changes are published by server automatically
     }
 
-    public String createUser (String username) throws Exception {
+    public String createOrUpdateUser(String username) throws Exception {
+        return createOrUpdateUser(username, null);
+    }
+
+    public String createOrUpdateUser(String username, String password) throws Exception {
         initSession();
-        final DnsUserResponse response = fromJson(post(ENDPOINT+EP_USER+"/"+username.toLowerCase(), null).json, DnsUserResponse.class);
+        final DnsUserResponse response = fromJson(post(ENDPOINT+EP_USER+"/"+username.toLowerCase(), password).json, DnsUserResponse.class);
         return response.getPassword();
     }
 

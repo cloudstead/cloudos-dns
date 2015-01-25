@@ -21,6 +21,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static org.cobbzilla.util.string.StringUtil.empty;
 
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -53,8 +54,9 @@ public class DnsResource {
 
     @POST
     @Path(DnsApiConstants.EP_USER + "/{name}")
-    public Response createUser (@HeaderParam(DnsApiConstants.H_API_KEY) String apiKey,
-                                @PathParam("name") String name) {
+    public Response createOrUpdateUser(@HeaderParam(DnsApiConstants.H_API_KEY) String apiKey,
+                                       @PathParam("name") String name,
+                                       String password) {
 
         final DnsAccount account = sessionDAO.find(apiKey);
         if (account == null) return ResourceUtil.forbidden();
@@ -75,7 +77,7 @@ public class DnsResource {
             accountDAO.delete(existing.getUuid());
         }
 
-        final String password = randomAlphanumeric(10);
+        if (empty(password)) password = randomAlphanumeric(10);
         accountDAO.create((DnsAccount) new DnsAccount().setPassword(new HashedPassword(password)).setName(name));
 
         return Response.ok(new DnsUserResponse(name, password)).build();
