@@ -109,6 +109,8 @@ public class DnsResource {
         final DnsAccount account = sessionDAO.find(apiKey);
         if (account == null) return ResourceUtil.forbidden();
 
+        if (!record.hasFqdn()) return ResourceUtil.invalid("{err.fqdn.empty}");
+
         // admins can modify anything. users can only modify records within their subdomain (their username)
         if (!account.isAdmin()) {
             if (!record.getFqdn().endsWith(account.getName() + "." + configuration.getDyndns().getZone())) {
