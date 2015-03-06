@@ -27,8 +27,11 @@ public class DnsAdminMain extends MainApiBase<DnsAdminMainOptions> {
         return response.json;
     }
 
-    @Override
-    protected void run() throws Exception {
+    @Override protected void setSecondFactor(Object loginRequest, String token) {
+        throw new IllegalStateException("2-factor auth not yet supported");
+    }
+
+    @Override protected void run() throws Exception {
         final DnsAdminMainOptions options = getOptions();
         final String domain = options.getDomain().toLowerCase();
         System.out.println(getApiClient().post(ENDPOINT + EP_USER + "/" + domain, options.getDomainPassword()).json);
