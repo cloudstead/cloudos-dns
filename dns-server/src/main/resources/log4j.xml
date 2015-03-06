@@ -14,12 +14,15 @@
 
     <!-- 3rdparty Loggers -->
     <logger name="org.springframework">
-        <level value="debug" />
+        <level value="warn" />
+    </logger>
+    <logger name="com.google.code.yanf4j">
+        <level value="error" />
     </logger>
 
     <!-- Root Logger -->
     <root>
-        <priority value="info" />
+        <priority value="warn" />
         <appender-ref ref="console" />
     </root>
 
