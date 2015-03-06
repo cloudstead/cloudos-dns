@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static cloudos.dns.DnsApiConstants.*;
+import static org.cobbzilla.util.daemon.ZillaRuntime.die;
 import static org.cobbzilla.util.json.JsonUtil.fromJson;
 import static org.cobbzilla.util.json.JsonUtil.toJson;
 
@@ -64,7 +65,7 @@ public class DnsClient extends ApiClientBase implements DnsManager {
             sessionId = post(ENDPOINT, toJson(new DnsSessionRequest(connectionInfo.getUser(), connectionInfo.getPassword()))).json;
             pushToken(sessionId);
         } catch (Exception e) {
-            throw new IllegalStateException("initSession: "+e, e);
+            die("initSession: " + e, e);
         }
     }
 }

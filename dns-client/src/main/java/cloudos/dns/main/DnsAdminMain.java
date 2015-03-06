@@ -23,12 +23,12 @@ public class DnsAdminMain extends MainApiBase<DnsAdminMainOptions> {
     @Override protected String getApiHeaderTokenName() { return DnsApiConstants.H_API_KEY; }
 
     @Override protected String getSessionId(RestResponse response) throws Exception {
-        if (response.status != 200) throw new IllegalStateException("Error logging in: "+response);
+        if (response.status != 200) die("Error logging in: "+response);
         return response.json;
     }
 
     @Override protected void setSecondFactor(Object loginRequest, String token) {
-        throw new IllegalStateException("2-factor auth not yet supported");
+        die("2-factor auth not yet supported");
     }
 
     @Override protected void run() throws Exception {

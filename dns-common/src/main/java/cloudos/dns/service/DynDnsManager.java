@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.cobbzilla.util.daemon.ZillaRuntime.die;
+
 @Slf4j
 public class DynDnsManager implements DnsManager {
 
@@ -139,7 +141,7 @@ public class DynDnsManager implements DnsManager {
                 break;
 
             default:
-                throw new IllegalStateException("Cannot add record ("+record+"), multiple existing records match: "+existing);
+                die("Cannot add record (" + record + "), multiple existing records match: " + existing);
         }
 
         if (!add) return false;
@@ -149,7 +151,7 @@ public class DynDnsManager implements DnsManager {
         try {
             job = getRecordApi().scheduleCreate(create);
             if (job.getStatus() != Job.Status.SUCCESS) {
-                throw new IllegalStateException("Error scheduling job for record (" + record + "), status=" + job.getStatus() + ": " + create);
+                die("Error scheduling job for record (" + record + "), status=" + job.getStatus() + ": " + create);
             }
             return true;
 

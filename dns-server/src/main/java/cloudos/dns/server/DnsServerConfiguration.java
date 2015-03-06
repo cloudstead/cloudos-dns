@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
 import rooty.RootyConfiguration;
 import rooty.toots.djbdns.DnsHandler;
 
+import static org.cobbzilla.util.daemon.ZillaRuntime.die;
+
 @Configuration @Slf4j
 public class DnsServerConfiguration extends RestServerConfiguration
         implements HasDatabaseConfiguration, HasRedisConfiguration {
@@ -31,8 +33,8 @@ public class DnsServerConfiguration extends RestServerConfiguration
     @Getter @Setter private DynDnsConfiguration dyndns;
 
     public DnsManager getDnsManager () {
-        if (rooty == null && dyndns == null) throw new IllegalStateException("neither rooty nor dyndns defined");
-        if (rooty != null && dyndns != null) throw new IllegalStateException("both rooty and dyndns defined");
+        if (rooty == null && dyndns == null) die("neither rooty nor dyndns defined");
+        if (rooty != null && dyndns != null) die("both rooty and dyndns defined");
 
         if (rooty != null) return rooty.getHandler(DnsHandler.class);
         return new DynDnsManager(dyndns);

@@ -18,6 +18,8 @@ import org.kohsuke.args4j.CmdLineParser;
 import java.io.File;
 import java.util.List;
 
+import static org.cobbzilla.util.io.FileUtil.abs;
+
 @NoArgsConstructor
 public class DnsMain {
 
@@ -44,7 +46,7 @@ public class DnsMain {
     public void run () throws Exception {
 
         final File configFile = options.getConfigFile();
-        if (!configFile.exists()) throw new IllegalArgumentException("env file does not exist: "+configFile.getAbsolutePath());
+        if (!configFile.exists()) throw new IllegalArgumentException("env file does not exist: "+abs(configFile));
 
         final DynDnsConfiguration config;
         if (options.hasConfigNode()) {
@@ -53,7 +55,7 @@ public class DnsMain {
             config = JsonUtil.fromJson(FileUtil.toString(configFile), DynDnsConfiguration.class);
         }
         if (!config.isValid()) {
-            throw new IllegalArgumentException("config ("+configFile.getAbsolutePath()+ ") is not valid. If connecting to Dyn, specify user, password, account and zone. If connecting to cloudos-DNS, use user, password, and base_uri");
+            throw new IllegalArgumentException("config ("+abs(configFile)+ ") is not valid. If connecting to Dyn, specify user, password, account and zone. If connecting to cloudos-DNS, use user, password, and base_uri");
         }
         final DnsManager dnsManager = config.isDynDns() ? new DynDnsManager(config) : new DnsClient(config);
 
