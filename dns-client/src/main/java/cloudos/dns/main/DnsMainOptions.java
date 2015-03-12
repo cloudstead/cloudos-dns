@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.cobbzilla.util.dns.DnsType;
 import org.cobbzilla.util.string.StringUtil;
+import org.cobbzilla.wizard.validation.ValidationRegexes;
 import org.kohsuke.args4j.Option;
 
 import java.io.File;
@@ -11,6 +12,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import static org.cobbzilla.util.daemon.ZillaRuntime.die;
 
 public class DnsMainOptions {
 
@@ -43,7 +46,11 @@ public class DnsMainOptions {
     public static final String OPT_FQDN = "-f";
     public static final String LONGOPT_FQDN = "--fqdn";
     @Option(name=OPT_FQDN, aliases=LONGOPT_FQDN, usage=USAGE_FQDN, required=false)
-    @Getter @Setter private String fqdn;
+    @Getter private String fqdn;
+    public void setFqdn(String fqdn) {
+        if (!ValidationRegexes.HOST_PATTERN.matcher(fqdn).matches()) die("setFqdn: invalid hostname: "+fqdn);
+        this.fqdn = fqdn;
+    }
 
     public static final String USAGE_SUBDOMAIN = "The subdomain to limit records to.";
     public static final String OPT_SUBDOMAIN = "-s";
