@@ -10,6 +10,7 @@ import static org.cobbzilla.util.string.StringUtil.empty;
 @NoArgsConstructor
 public class DynDnsConfiguration extends ApiConnectionInfo {
 
+    @Getter @Setter private boolean enabled = true;
     @Getter @Setter private String account;
     @Getter @Setter private String zone;
 
