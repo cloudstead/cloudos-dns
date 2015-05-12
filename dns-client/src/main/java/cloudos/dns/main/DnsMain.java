@@ -18,6 +18,7 @@ import org.kohsuke.args4j.CmdLineParser;
 import java.io.File;
 import java.util.List;
 
+import static org.cobbzilla.util.daemon.ZillaRuntime.die;
 import static org.cobbzilla.util.io.FileUtil.abs;
 
 @NoArgsConstructor
@@ -46,7 +47,7 @@ public class DnsMain {
     public void run () throws Exception {
 
         final File configFile = options.getConfigFile();
-        if (!configFile.exists()) throw new IllegalArgumentException("env file does not exist: "+abs(configFile));
+        if (!configFile.exists()) die("env file does not exist: "+abs(configFile));
 
         final DynDnsConfiguration config;
         if (options.hasConfigNode()) {
@@ -54,15 +55,19 @@ public class DnsMain {
         } else {
             config = JsonUtil.fromJson(FileUtil.toString(configFile), DynDnsConfiguration.class);
         }
-        if (!config.isValid()) {
-            throw new IllegalArgumentException("config ("+abs(configFile)+ ") is not valid. If connecting to Dyn, specify user, password, account and zone. If connecting to cloudos-DNS, use user, password, and base_uri");
+        if (!config.isValid()) die("config (" + abs(configFile) + ") is not valid. If connecting to Dyn, specify user, password, account and zone. If connecting to cloudos-dns, specify user, password, and base_uri");
+
+        if (!config.isEnabled()) {
+            System.err.println("config indicates DNS is disabled, exiting");
+            return;
         }
+
         final DnsManager dnsManager = config.isDynDns() ? new DynDnsManager(config) : new DnsClient(config);
 
         final DnsRecordBase record;
         switch (options.getOperation()) {
             case add:
-                if (options.hasSubdomain()) throw new IllegalArgumentException("subdomain option is invalid for 'add' operations");
+                if (options.hasSubdomain()) die("subdomain option is invalid for 'add' operations");
                 record = new DnsRecord()
                         .setTtl(options.getTtl())
                         .setOptions(options.getOptionsMap())
