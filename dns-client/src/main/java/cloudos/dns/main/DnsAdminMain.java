@@ -10,8 +10,6 @@ import static cloudos.dns.DnsApiConstants.EP_USER;
 
 public class DnsAdminMain extends MainApiBase<DnsAdminMainOptions> {
 
-    @Override protected DnsAdminMainOptions initOptions() { return new DnsAdminMainOptions(); }
-
     public static void main (String[] args) { main(DnsAdminMain.class, args); }
 
     @Override protected Object buildLoginRequest(DnsAdminMainOptions options) {
