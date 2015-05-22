@@ -2,8 +2,8 @@ package cloudos.dns.main;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.cobbzilla.util.daemon.ZillaRuntime;
 import org.cobbzilla.util.dns.DnsType;
-import org.cobbzilla.util.string.StringUtil;
 import org.cobbzilla.wizard.validation.ValidationRegexes;
 import org.kohsuke.args4j.Option;
 
@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.cobbzilla.util.daemon.ZillaRuntime.die;
+import static org.cobbzilla.util.daemon.ZillaRuntime.empty;
 
 public class DnsMainOptions {
 
@@ -28,7 +29,7 @@ public class DnsMainOptions {
     public static final String LONGOPT_CONFIG_NODE = "--config-node";
     @Option(name=OPT_CONFIG_NODE, aliases=LONGOPT_CONFIG_NODE, usage=USAGE_CONFIG_NODE, required=false)
     @Getter @Setter private String configNode;
-    public boolean hasConfigNode () { return !StringUtil.empty(configNode); }
+    public boolean hasConfigNode () { return !empty(configNode); }
 
     public static final String USAGE_OPERATION = "The operation to perform. Can be add, remove or list. Default is list.";
     public static final String OPT_OPERATION = "-p";
@@ -57,7 +58,7 @@ public class DnsMainOptions {
     public static final String LONGOPT_SUBDOMAIN = "--subdomain";
     @Option(name=OPT_SUBDOMAIN, aliases=LONGOPT_SUBDOMAIN, usage=USAGE_SUBDOMAIN, required=false)
     @Getter @Setter private String subdomain;
-    public boolean hasSubdomain() { return !StringUtil.empty(subdomain); }
+    public boolean hasSubdomain() { return !empty(subdomain); }
 
     public static final String USAGE_VALUE = "The value of the DNS record. Required for 'add' operations.";
     public static final String OPT_VALUE = "-v";

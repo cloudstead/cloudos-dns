@@ -3,9 +3,10 @@ package cloudos.dns.config;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.cobbzilla.util.daemon.ZillaRuntime;
 import org.cobbzilla.util.http.ApiConnectionInfo;
 
-import static org.cobbzilla.util.string.StringUtil.empty;
+import static org.cobbzilla.util.daemon.ZillaRuntime.empty;
 
 @NoArgsConstructor
 public class DynDnsConfiguration extends ApiConnectionInfo {
