@@ -20,6 +20,7 @@ import java.util.List;
 
 import static org.cobbzilla.util.daemon.ZillaRuntime.die;
 import static org.cobbzilla.util.io.FileUtil.abs;
+import static org.cobbzilla.util.json.JsonUtil.fromJson;
 
 @NoArgsConstructor
 public class DnsMain {
@@ -51,9 +52,9 @@ public class DnsMain {
 
         final DynDnsConfiguration config;
         if (options.hasConfigNode()) {
-            config = JsonUtil.fromJson(FileUtil.toString(configFile), options.getConfigNode(), DynDnsConfiguration.class);
+            config = fromJson(configFile, options.getConfigNode(), DynDnsConfiguration.class);
         } else {
-            config = JsonUtil.fromJson(FileUtil.toString(configFile), DynDnsConfiguration.class);
+            config = fromJson(configFile, DynDnsConfiguration.class);
         }
         if (!config.isValid()) die("config (" + abs(configFile) + ") is not valid. If connecting to Dyn, specify user, password, account and zone. If connecting to cloudos-dns, specify user, password, and base_uri");
 
