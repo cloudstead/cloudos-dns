@@ -7,22 +7,26 @@ import cloudos.dns.model.DnsAccount;
 import cloudos.dns.model.support.DnsSessionRequest;
 import cloudos.dns.model.support.DnsUserResponse;
 import cloudos.dns.server.DnsServerConfiguration;
+import com.qmino.miredot.annotations.ReturnType;
 import lombok.extern.slf4j.Slf4j;
-import org.cobbzilla.util.daemon.ZillaRuntime;
 import org.cobbzilla.util.dns.DnsManager;
 import org.cobbzilla.util.dns.DnsRecord;
 import org.cobbzilla.util.dns.DnsRecordMatch;
 import org.cobbzilla.wizard.model.HashedPassword;
 import org.cobbzilla.wizard.resources.ResourceUtil;
+import org.cobbzilla.wizard.validation.ConstraintViolationBean;
+import org.cobbzilla.wizard.validation.DnsRecordValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.cobbzilla.util.daemon.ZillaRuntime.empty;
+import static org.cobbzilla.wizard.resources.ResourceUtil.*;
 
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -35,11 +39,15 @@ public class DnsResource {
     @Autowired private SessionDAO sessionDAO;
 
     @GET
-    public Response hello () throws Exception {
-        return Response.ok("hello\n").build();
-    }
+    public Response hello () throws Exception { return ok("hello\n"); }
 
+    /**
+     * Start a new session (login)
+     * @param request the session request (login credentials)
+     * @return A new session token
+     */
     @POST
+    @ReturnType("java.lang.String")
     public Response startSession (DnsSessionRequest request) {
 
         final String zone = configuration.getDyndns().getZone();
@@ -49,12 +57,20 @@ public class DnsResource {
         if (user.endsWith(zone)) user = user.substring(0, user.length() - zone.length());
 
         final DnsAccount account = accountDAO.findByNameAndPassword(user, request.getPassword());
-        if (account == null) return ResourceUtil.notFound();
-        return Response.ok(sessionDAO.create(account)).build();
+        if (account == null) return notFound();
+        return ok(sessionDAO.create(account));
     }
 
+    /**
+     * Create or update a user. Must be an admin.
+     * @param apiKey The session token
+     * @param name Name of the user to create
+     * @param password Password for the new user
+     * @return The newly created DnsUser
+     */
     @POST
     @Path(DnsApiConstants.EP_USER + "/{name}")
+    @ReturnType("cloudos.dns.model.support.DnsUserResponse")
     public Response createOrUpdateUser(@HeaderParam(DnsApiConstants.H_API_KEY) String apiKey,
                                        @PathParam("name") String name,
                                        String password) {
@@ -81,11 +97,18 @@ public class DnsResource {
         if (empty(password)) password = randomAlphanumeric(10);
         accountDAO.create((DnsAccount) new DnsAccount().setPassword(new HashedPassword(password)).setName(name));
 
-        return Response.ok(new DnsUserResponse(name, password)).build();
+        return ok(new DnsUserResponse(name, password));
     }
 
+    /**
+     * List all records that match a DnsRecordMatch query
+     * @param apiKey the session token
+     * @param match the query
+     * @return a List of DnsRecords that match. If none are found, an empty list is returned (not a 404)
+     */
     @POST
     @Path(DnsApiConstants.EP_LIST)
+    @ReturnType("java.util.List<org.cobbzilla.util.dns.DnsRecord>")
     public Response list (@HeaderParam(DnsApiConstants.H_API_KEY) String apiKey,
                           DnsRecordMatch match) {
 
@@ -95,22 +118,30 @@ public class DnsResource {
         if (!account.isAdmin()) match.setSubdomain(account.getName()+"."+configuration.getDyndns().getZone());
 
         try {
-            return Response.ok(configuration.getDnsManager().list(match)).build();
+            return ok(configuration.getDnsManager().list(match));
         } catch (Exception e) {
             log.error("error listing records: "+e, e);
-            return Response.serverError().build();
+            return serverError();
         }
     }
 
+    /**
+     * Create or update a DNS record
+     * @param apiKey the session token
+     * @param record the record to create or update
+     * @return true if the record was created or updated. false if it was unchanged.
+     */
     @POST
     @Path(DnsApiConstants.EP_UPDATE)
+    @ReturnType("java.lang.Boolean")
     public Response writeRecord(@HeaderParam(DnsApiConstants.H_API_KEY) String apiKey,
                                 DnsRecord record) {
 
         final DnsAccount account = sessionDAO.find(apiKey);
         if (account == null) return ResourceUtil.forbidden();
 
-        if (!record.hasFqdn()) return ResourceUtil.invalid("{err.fqdn.empty}");
+        final List<ConstraintViolationBean> errors = DnsRecordValidator.validate(record);
+        if (!empty(errors)) return invalid(errors);
 
         // admins can modify anything. users can only modify records within their subdomain (their username)
         if (!account.isAdmin()) {
@@ -127,16 +158,23 @@ public class DnsResource {
                 updated = dnsManager.write(record);
                 if (updated) dnsManager.publish();
             }
-            return Response.ok(updated).build();
+            return ok(updated);
 
         } catch (Exception e) {
             log.error("Error writing record: "+e, e);
-            return Response.serverError().build();
+            return serverError();
         }
     }
 
+    /**
+     * Delete DNS records that match a DnsRecordMatch query
+     * @param apiKey the session token
+     * @param match the DNS query
+     * @return an integer: the number of records removed
+     */
     @POST
     @Path(DnsApiConstants.EP_DELETE)
+    @ReturnType("java.lang.Integer")
     public Response removeRecords(@HeaderParam(DnsApiConstants.H_API_KEY) String apiKey,
                                   DnsRecordMatch match) {
 
@@ -153,11 +191,11 @@ public class DnsResource {
                 removed = dnsManager.remove(match);
                 dnsManager.publish();
             }
-            return Response.ok(removed).build();
+            return ok(removed);
 
         } catch (Exception e) {
             log.error("Error removing records: "+e, e);
-            return Response.serverError().build();
+            return serverError();
         }
     }
 

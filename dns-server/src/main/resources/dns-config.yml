@@ -32,14 +32,18 @@ jersey:
   resourcePackages: [ cloudos.dns.resources, org.cobbzilla.wizard.server, org.cobbzilla.wizard.filters ]
   responseFilters: [ org.cobbzilla.wizard.filters.ScrubbableScrubber ]
 
-#rooty:
-#  queueName: {{ROOTY_QUEUE_NAME}} # matches where rooty reads from, defined in /etc/rooty/*.yml (from cloudstead chef recipe)
-#  secret: {{ROOTY_SECRET}}        # used to generate hashes in request filenames
-#  handlers:
-#    rooty.toots.djbdns.DnsHandler:
+{{#DNS_DJB}}
+rooty:
+  queueName: {{ROOTY_QUEUE_NAME}} # matches where rooty reads from, defined in /etc/rooty/*.yml (from cloudstead chef recipe)
+  secret: {{ROOTY_SECRET}}        # used to generate hashes in request filenames
+  handlers:
+    rooty.toots.djbdns.DnsHandler:
+{{/DNS_DJB}}
 
+{{#DNS_DYN}}
 dyndns:
   account: {{DYNDNS_ACCOUNT}}
   user: {{DYNDNS_USER}}
   password: {{DYNDNS_PASSWORD}}
   zone: {{DYNDNS_ZONE}}
+{{/DNS_DYN}}
