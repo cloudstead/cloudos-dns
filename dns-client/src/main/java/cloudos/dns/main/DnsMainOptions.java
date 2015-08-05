@@ -2,9 +2,8 @@ package cloudos.dns.main;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.cobbzilla.util.daemon.ZillaRuntime;
 import org.cobbzilla.util.dns.DnsType;
-import org.cobbzilla.wizard.validation.ValidationRegexes;
+import org.cobbzilla.util.string.ValidationRegexes;
 import org.kohsuke.args4j.Option;
 
 import java.io.File;
