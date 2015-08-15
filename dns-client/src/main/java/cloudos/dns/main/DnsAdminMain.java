@@ -16,7 +16,7 @@ public class DnsAdminMain extends MainApiBase<DnsAdminMainOptions> {
         return new DnsSessionRequest(options.getAccount(), options.getPassword());
     }
 
-    @Override protected String getLoginUri() { return ENDPOINT; }
+    @Override protected String getLoginUri(String account) { return ENDPOINT; }
 
     @Override protected String getApiHeaderTokenName() { return DnsApiConstants.H_API_KEY; }
 
