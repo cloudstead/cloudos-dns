@@ -19,7 +19,7 @@ public class DnsAccount extends UniquelyNamedEntity implements Scrubbable {
     private static final ScrubbableField[] SCRUBBABLE = new ScrubbableField[]{
             new ScrubbableField(DnsAccount.class, "password", String.class)
     };
-    @Override @JsonIgnore public ScrubbableField[] getFieldsToScrub() { return SCRUBBABLE; }
+    @Override @JsonIgnore public ScrubbableField[] fieldsToScrub() { return SCRUBBABLE; }
 
     @Getter @Setter private boolean admin = false;
     @Getter @Setter @Embedded @JsonIgnore private HashedPassword password;
