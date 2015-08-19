@@ -23,9 +23,10 @@ For Ubuntu servers, run `ubuntu_init.sh` to install the required packages.
 
 ## Installation
 
-Edit the `install.env` file to configure the installation.
+Edit the `install.env` file to configure the installation. The only field you that MUST be set 
+manually is `CLOUDOS_ADMIN_PASS`.
 
-Then run `install_standalone.sh` to install and start the cloudos-dns server.
+Run `./install_standalone.sh` to install and start the cloudos-dns server.
 
 ## Controlling the server
 
@@ -36,13 +37,22 @@ Use the following commands to control the cloudos-dns server:
    * `service cloudos-dns restart`
    * `service cloudos-dns status`
 
+There is a separate service called `cloudos-dns-rooty` that performs the modifications of the djbdns data file.
+Because the djbdns data file is only writeable by root, `cloudos-dns-rooty` runs as root, while `cloudos-dns`
+provides the REST API and runs as an unprivileged user. You can control the `cloudos-dns-rooty` service too:
+
+   * `service cloudos-dns-rooty stop`
+   * `service cloudos-dns-rooty start`
+   * `service cloudos-dns-rooty restart`
+   * `service cloudos-dns-rooty status`
+
 ## Accessing the server from a cloudstead
 
 The cloudos-dns server only listens on localhost via regular HTTP. 
 
 In order for your cloudsteads to access it, you will need to install a webserver (Apache or 
-nginx are good choices), and proxy requests to it. You can also configure your webserver to use HTTPS,
-so that DNS management traffic is encrypted.
+nginx are good choices). Configure your web server to proxy requests to cloudos-dns. 
+You should also configure your webserver to use HTTPS, so that DNS management traffic is encrypted.
 
 ## Creating accounts
 
@@ -58,6 +68,8 @@ Let's say you are setting up a cloudstead named foo.example.com, and your admin 
 The output from the cdns command will show you the password that was generated for the new account.
 Alternatively, you can set the password yourself by adding `-P <password>` to the `cdns` command.
 
+The user just created will only be able to read and write DNS records that end with foo.example.com.
+
 When launching your new cloudstead, use the credentials you just created above for the DNS user and password.
 For the DNS URL, use the publicly accessible URL that your webserver uses to proxy to cloudos-dns.
 
@@ -68,3 +80,29 @@ you've created.
 
 You can also manage DNS records directly with the `cdns` command.
 Run `cdns dns -h` to view options for this command.
+
+#### Examples
+
+Create an A record that indicates foo.example.com should resolve to 10.2.3.4
+
+    cdns dns -a admin -o add -r a -f foo.example.com -v 10.2.3.4
+
+Create an MX record that indicates mail to foo.example.com should go to mx.foo.example.com, with a weight of 10
+
+    cdns dns -a admin -o add -r mx -f foo.example.com -v mx.foo.example.com -O "rank=10"
+
+Remove all records whose FQDN ends with foo.example.com
+
+    cdns dns -a admin -o remove -S foo.example.com
+
+Remove all CNAME records whose FQDN ends with foo.example.com
+
+    cdns dns -a admin -o remove -r cname -S foo.example.com
+
+List all records whose FQDN ends with foo.example.com
+
+    cdns dns -a admin -o list -S foo.example.com
+
+List all MX records whose FQDN ends with foo.example.com
+
+    cdns dns -a admin -o list -r mx -S foo.example.com
