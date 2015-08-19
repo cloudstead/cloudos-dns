@@ -11,6 +11,7 @@ server running local to it.
 
 cloudos-dns requires:
 
+   * djbdns
    * Java (version 7+)
    * PostgreSQL (version 8+)
    * Redis
@@ -19,7 +20,8 @@ cloudos-dns requires:
    * curl
    * uuid
 
-For Ubuntu servers, run `ubuntu_init.sh` to install the required packages.
+For Ubuntu servers, run `ubuntu_init.sh` to install the required packages (except djbdns, which we assume
+you already have installed and configured). To install djbdns from scratch: http://cr.yp.to/djbdns/install.html
 
 ## Installation
 
