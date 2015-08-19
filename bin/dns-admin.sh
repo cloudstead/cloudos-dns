@@ -24,4 +24,4 @@ if [ ! -z ${DEBUG} ] && [ ${DEBUG} = "debug" ] ; then
   shift
 fi
 
-java ${DEBUG_OPTS} -cp ${JAR} cloudos.dns.main.DnsMain "$@"
+java ${DEBUG_OPTS} -cp ${JAR} cloudos.dns.main.DnsDirectMain "$@"

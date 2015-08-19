@@ -1,37 +1,41 @@
 package cloudos.dns.main;
 
-import cloudos.dns.DnsApiConstants;
-import cloudos.dns.model.support.DnsSessionRequest;
-import org.cobbzilla.wizard.main.MainApiBase;
-import org.cobbzilla.wizard.util.RestResponse;
+import org.cobbzilla.wizard.client.ApiClientBase;
 
-import static cloudos.dns.DnsApiConstants.ENDPOINT;
-import static cloudos.dns.DnsApiConstants.EP_USER;
+import static cloudos.dns.DnsApiConstants.*;
+import static org.cobbzilla.util.json.JsonUtil.toJson;
 
-public class DnsAdminMain extends MainApiBase<DnsAdminMainOptions> {
+public class DnsAdminMain extends DnsMainBase<DnsAdminMainOptions> {
 
     public static void main (String[] args) { main(DnsAdminMain.class, args); }
 
-    @Override protected Object buildLoginRequest(DnsAdminMainOptions options) {
-        return new DnsSessionRequest(options.getAccount(), options.getPassword());
-    }
-
-    @Override protected String getLoginUri(String account) { return ENDPOINT; }
-
-    @Override protected String getApiHeaderTokenName() { return DnsApiConstants.H_API_KEY; }
-
-    @Override protected String getSessionId(RestResponse response) throws Exception {
-        if (response.status != 200) die("Error logging in: "+response);
-        return response.json;
-    }
-
-    @Override protected void setSecondFactor(Object loginRequest, String token) {
-        die("2-factor auth not yet supported");
-    }
-
     @Override protected void run() throws Exception {
+        final ApiClientBase api = getApiClient();
         final DnsAdminMainOptions options = getOptions();
-        final String domain = options.getDomain().toLowerCase();
-        System.out.println(getApiClient().post(ENDPOINT + EP_USER + "/" + domain, options.getDomainPassword()).json);
+        final String uri;
+
+        switch (options.getOperation()) {
+            case list:
+                out(api.doGet(DNS_ENDPOINT + EP_USER_LIST));
+                break;
+
+            case add:
+                if (!options.hasDomain()) die("Domain is required");
+                if (!options.hasZone()) die("Zone is required");
+                uri = DNS_ENDPOINT + EP_USER + "/" + options.getDomain();
+                out(api.doPost(uri, toJson(options.getDnsAccountRequest())));
+                break;
+
+            case remove:
+                if (!options.hasDomain()) die("Domain is required");
+                uri = DNS_ENDPOINT + EP_USER + "/" + options.getDomain();
+                out(api.doDelete(uri));
+                break;
+
+            default:
+                die("Unrecognized operation: "+options.getOperation());
+                break;
+        }
     }
+
 }

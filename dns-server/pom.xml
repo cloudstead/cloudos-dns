@@ -22,7 +22,7 @@ For commercial use, please contact cloudstead.io
     <dependencies>
         <dependency>
             <groupId>cloudstead</groupId>
-            <artifactId>dns-common</artifactId>
+            <artifactId>dns-client</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 

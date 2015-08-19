@@ -1,0 +1,9 @@
+#!/bin/bash
+
+APP_USER_HOME="$(bash -c "echo -n ~@@USER@@")"
+APP_BASE="${APP_USER_HOME}/cloudos-dns"
+RUN_AS_USER="root"
+JAVA_CLASS="rooty.RootyMain"
+CONFIG="/etc/rooty.yml"
+
+exec /usr/local/bin/jrun-init "${APP_BASE}" "${RUN_AS_USER}" ${JAVA_CLASS} ${CONFIG} "$@"

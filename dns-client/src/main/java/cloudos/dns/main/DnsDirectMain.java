@@ -10,8 +10,6 @@ import org.cobbzilla.util.dns.DnsManager;
 import org.cobbzilla.util.dns.DnsRecord;
 import org.cobbzilla.util.dns.DnsRecordBase;
 import org.cobbzilla.util.dns.DnsRecordMatch;
-import org.cobbzilla.util.io.FileUtil;
-import org.cobbzilla.util.json.JsonUtil;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
@@ -22,13 +20,16 @@ import static org.cobbzilla.util.daemon.ZillaRuntime.die;
 import static org.cobbzilla.util.io.FileUtil.abs;
 import static org.cobbzilla.util.json.JsonUtil.fromJson;
 
+/**
+ * Edits a DNS record by using the underlying
+ */
 @NoArgsConstructor
-public class DnsMain {
+public class DnsDirectMain {
 
-    @Getter @Setter private DnsMainOptions options = new DnsMainOptions();
+    @Getter @Setter private DnsDirectMainOptions options = new DnsDirectMainOptions();
 
     public static void main (String[] args) throws Exception {
-        final DnsMain dnsMain = new DnsMain();
+        final DnsDirectMain dnsMain = new DnsDirectMain();
         if (dnsMain.init(args)) dnsMain.run();
     }
 
@@ -69,12 +70,7 @@ public class DnsMain {
         switch (options.getOperation()) {
             case add:
                 if (options.hasSubdomain()) die("subdomain option is invalid for 'add' operations");
-                record = new DnsRecord()
-                        .setTtl(options.getTtl())
-                        .setOptions(options.getOptionsMap())
-                        .setType(options.getType())
-                        .setFqdn(options.getFqdn())
-                        .setValue(options.getValue());
+                record = options.getDnsRecord();
                 // do not add if there is already an identical record
                 if (dnsManager.list(new DnsRecordMatch(record)).isEmpty()) {
                     dnsManager.write((DnsRecord) record);
@@ -83,20 +79,13 @@ public class DnsMain {
                 break;
 
             case remove:
-                record = new DnsRecordMatch()
-                        .setSubdomain(options.getSubdomain())
-                        .setType(options.getType())
-                        .setFqdn(options.getFqdn())
-                        .setValue(options.getValue());
+                record = options.getDeleteRecordsMatch();
                 dnsManager.remove((DnsRecordMatch) record);
                 dnsManager.publish();
                 break;
 
             case list:
-                record = new DnsRecordMatch()
-                        .setSubdomain(options.getSubdomain())
-                        .setType(options.getType())
-                        .setFqdn(options.getFqdn());
+                record = options.getListRecordsMatch();
                 final List<DnsRecord> found = dnsManager.list((DnsRecordMatch) record);
                 System.out.println("------ found "+found.size()+" records");
                 for (DnsRecord rec : found) {
@@ -106,5 +95,4 @@ public class DnsMain {
 
         }
     }
-
 }

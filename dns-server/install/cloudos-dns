@@ -1,0 +1,7 @@
+#!/bin/bash
+
+APP_USER_HOME="$(bash -c "echo -n ~@@USER@@")"
+APP_BASE="${APP_USER_HOME}/cloudos-dns"
+RUN_AS_USER="@@USER@@"
+
+exec /usr/local/bin/jrun-init "${APP_BASE}" "${RUN_AS_USER}" "$@"

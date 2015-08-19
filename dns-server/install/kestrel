@@ -1,0 +1,6 @@
+#!/bin/bash
+
+APP_BASE="/usr/local/kestrel"
+RUN_AS_USER="kestrel"
+
+exec /usr/local/bin/jrun-init "${APP_BASE}" "${RUN_AS_USER}" "$@"

@@ -13,8 +13,8 @@ dataKey: {{SESSION_DATAKEY}}
 
 database:
   driver: org.postgresql.Driver
-  url: jdbc:postgresql://127.0.0.1:5432/cloudos_dns
-  user: cloudos_dns
+  url: jdbc:postgresql://{{CLOUDOS_DNS_DB_HOST}}:{{CLOUDOS_DNS_DB_PORT}}/{{CLOUDOS_DNS_DB_NAME}}
+  user: {{CLOUDOS_DNS_DB_USER}}
   password: {{CLOUDOS_DNS_DB_PASS}}
 
   hibernate:
@@ -29,16 +29,20 @@ http:
   baseUri: /api
 
 jersey:
-  resourcePackages: [ cloudos.dns.resources, org.cobbzilla.wizard.server, org.cobbzilla.wizard.filters ]
+  resourcePackages:
+  - cloudos.dns.resources
+  - org.cobbzilla.wizard.server
+  - org.cobbzilla.wizard.filters
+  - org.cobbzilla.wizard.exceptionmappers
   responseFilters: [ org.cobbzilla.wizard.filters.ScrubbableScrubber ]
 
-{{#DNS_DJB}}
+{{#DNS_HANDLER}}
 rooty:
   queueName: {{ROOTY_QUEUE_NAME}} # matches where rooty reads from, defined in /etc/rooty/*.yml (from cloudstead chef recipe)
   secret: {{ROOTY_SECRET}}        # used to generate hashes in request filenames
   handlers:
-    rooty.toots.djbdns.DnsHandler:
-{{/DNS_DJB}}
+    {{DNS_HANDLER}}:
+{{/DNS_HANDLER}}
 
 {{#DNS_DYN}}
 dyndns:

@@ -6,4 +6,11 @@ if [ -z ${DEPLOY} ] ; then
   exit 1
 fi
 
-# Nothing to do for now, just a marker file to indicate we are deployable
+BASE=$(cd $(dirname $0) && pwd)
+CLOUDOS_BASE="$(cd ${BASE}/../.. && pwd)"
+CLOUDOS_APPS="${CLOUDOS_BASE}/cloudos-apps"
+
+cp install/* ${DEPLOY}/
+cp bin/cdns ${DEPLOY}/
+cp ${CLOUDOS_APPS}/apps/cloudos-dns/files/cloudos-dns.sql ${DEPLOY}/
+cp ${CLOUDOS_APPS}/apps/java/files/jrun* ${DEPLOY}/

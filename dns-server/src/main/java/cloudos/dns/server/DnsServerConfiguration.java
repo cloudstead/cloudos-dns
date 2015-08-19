@@ -40,4 +40,6 @@ public class DnsServerConfiguration extends RestServerConfiguration
         return new DynDnsManager(dyndns);
     }
 
+    public String getZone() { return dyndns != null ? dyndns.getZone() : null; }
+
 }

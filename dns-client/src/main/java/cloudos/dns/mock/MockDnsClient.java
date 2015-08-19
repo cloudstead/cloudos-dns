@@ -18,7 +18,7 @@ public class MockDnsClient extends DnsClient {
         actions.add(new DnsOperation(DnsCommand.PUBLISH));
     }
 
-    @Override public String createOrUpdateUser(String username) throws Exception {
+    @Override public String createOrUpdateUser(String username, String zone) throws Exception {
         actions.add(new DnsOperation(DnsCommand.ADD_USER, username, username));
         return username;
     }

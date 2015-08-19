@@ -1,0 +1,11 @@
+# Rooty configuration
+#
+# The rooty service runs as root and receives requests from cloudos-dns to manage DNS
+#
+queueName: @@ROOTY_QUEUE_NAME@@
+secret: @@ROOTY_SECRET@@ # used to encrypt messages and generate hashes in request filenames
+
+handlers:
+  @@DNS_HANDLER@@:
+    params:
+      dataFile: /etc/tinydns/root/data  # todo: make this configurable, based on DNS_HANDLER
