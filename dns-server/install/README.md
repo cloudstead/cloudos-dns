@@ -12,7 +12,7 @@ server running local to it.
 cloudos-dns requires:
 
    * djbdns
-   * Java (version 7+)
+   * Java (version 7 - NOT version 8)
    * PostgreSQL (version 8+)
    * Redis
    * Kestrel
@@ -29,6 +29,9 @@ Edit the `install.env` file to configure the installation. The only field you th
 manually is `CLOUDOS_ADMIN_PASS`.
 
 Run `./install_standalone.sh` to install and start the cloudos-dns server.
+
+If you're having trouble running the `./install_standalone.sh` script, follow the instructions in
+manual_install.md
 
 ## Controlling the server
 

@@ -2,5 +2,6 @@
 
 APP_BASE="/usr/local/kestrel"
 RUN_AS_USER="kestrel"
+export DEPLOY_ENV=production
 
 exec /usr/local/bin/jrun-init "${APP_BASE}" "${RUN_AS_USER}" "$@"

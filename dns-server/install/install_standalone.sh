@@ -146,23 +146,33 @@ cd ${BASE}
 
 # Initialize the database
 export PSQL='psql --quiet --tuples-only'
+export PSQL_PG="psql -U ${PG_USER} --quiet --tuples-only"
 export PSQL_COMMAND="${PSQL} --command"
+export PSQL_PG_COMMAND="${PSQL_PG} --command"
 export USER_PSQL="${PSQL} -U ${CLOUDOS_DNS_DB_USER} -h ${CLOUDOS_DNS_DB_HOST} -p ${CLOUDOS_DNS_DB_PORT}"
 
 # check for existing password in ~cloudos-dns
 export SCHEMA_FILE="${BASE}/cloudos-dns.sql"
 
-su -l -p ${PG_USER} <<'INITDB'
+if [ ! -z "$(which uuid 2> /dev/null)" ] ; then
+  uuid=$(uuid -v 4)
+elif [ ! -z "$(which uuidgen 2> /dev/null)" ] ; then
+  uuid=$(uuidgen -r)
+else
+  die "No UUID program found!"
+fi
+
+su -l -p ${PG_USER} <<INITDB
 
 # Create database user
-DB_USER_EXISTS=$(${PSQL_COMMAND} "select usename from pg_user" | grep ${CLOUDOS_DNS_DB_USER} | wc -l | tr -d ' ')
+DB_USER_EXISTS=$(${PSQL_PG_COMMAND} "select usename from pg_user" | grep ${CLOUDOS_DNS_DB_USER} | wc -l | tr -d ' ')
 if [ ${DB_USER_EXISTS} -eq 0 ] ; then
   createuser --no-createdb --no-createrole --no-superuser ${CLOUDOS_DNS_DB_USER}
-  echo "ALTER USER ${CLOUDOS_DNS_DB_USER} PASSWORD '"${CLOUDOS_DNS_DB_PASS}"'" | psql -U postgres
+  echo "ALTER USER ${CLOUDOS_DNS_DB_USER} PASSWORD '"${CLOUDOS_DNS_DB_PASS}"'" | ${PSQL_PG}
 fi
 
 # Create database
-DB_EXISTS=$(${PSQL_COMMAND} "select datname from pg_database" | grep ${CLOUDOS_DNS_DB_NAME} | wc -l | tr -d ' ')
+DB_EXISTS=$(${PSQL_PG_COMMAND} "select datname from pg_database" | grep ${CLOUDOS_DNS_DB_NAME} | wc -l | tr -d ' ')
 if [ ${DB_EXISTS} -eq 0 ] ; then
   createdb --encoding=UNICODE --owner=${CLOUDOS_DNS_DB_USER} ${CLOUDOS_DNS_DB_NAME}
 fi
@@ -177,7 +187,6 @@ fi
 jar=$(find ${SERVER_ROOT}/target -type f -name cloudos-dns-server-*.jar | head -1)
 ADMIN_EXISTS=$(PGPASSWORD="${CLOUDOS_DNS_DB_PASS}" ${USER_PSQL} -c "select count(*) from dns_account where admin = true" ${CLOUDOS_DNS_DB_NAME} | head -1 | tr -d ' ')
 if [ ${ADMIN_EXISTS} -eq 0 ] ; then
-  uuid=$(uuid -v 4)
   ADMIN_PASS_BCRYPTED=$(java -cp ${jar} org.cobbzilla.util.security.bcrypt.BCryptUtil 12 ${CLOUDOS_ADMIN_PASS})
   PGPASSWORD="${CLOUDOS_DNS_DB_PASS}" ${USER_PSQL} -c \
     "insert into dns_account (uuid, ctime, admin, name, hashed_password) VALUES ('"${uuid}"', 0, TRUE, '"${CLOUDOS_ADMIN_USER}"', '"${ADMIN_PASS_BCRYPTED}"')"  ${CLOUDOS_DNS_DB_NAME}
