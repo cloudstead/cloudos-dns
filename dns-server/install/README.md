@@ -111,3 +111,10 @@ List all records whose FQDN ends with foo.example.com
 List all MX records whose FQDN ends with foo.example.com
 
     cdns dns -a admin -o list -r mx -S foo.example.com
+
+#### Common problems
+
+If you get an error like this: `java.security.InvalidKeyException: Illegal key size` then
+install the JCE unlimited strength encryption from here:
+
+    http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html
