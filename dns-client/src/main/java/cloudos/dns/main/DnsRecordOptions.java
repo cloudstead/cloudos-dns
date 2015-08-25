@@ -66,28 +66,11 @@ public class DnsRecordOptions extends DnsMainOptionsBase {
     @Option(name=OPT_OPTIONS, aliases=LONGOPT_OPTIONS, usage=USAGE_OPTIONS)
     @Getter @Setter private String options;
 
-    public Map<String, String> getOptionsMap() {
-        if (options == null || options.isEmpty()) return Collections.emptyMap();
-
-        final Map<String, String> map = new HashMap<>();
-        for (String kvPair : options.split(",")) {
-            int eqPos = kvPair.indexOf("=");
-            if (eqPos == kvPair.length()) throw new IllegalArgumentException("Option cannot end in '=' character");
-            if (eqPos == -1) {
-                map.put(kvPair.trim(), "true");
-            } else {
-                map.put(kvPair.substring(0, eqPos).trim(), kvPair.substring(eqPos+1).trim());
-            }
-        }
-
-        return map;
-    }
-
     public DnsRecordBase getDnsRecord() {
         DnsRecordBase record;
         record = new DnsRecord()
                 .setTtl(getTtl())
-                .setOptions(getOptionsMap())
+                .setOptions(getOptions())
                 .setType(getType())
                 .setFqdn(getFqdn())
                 .setValue(getValue());
