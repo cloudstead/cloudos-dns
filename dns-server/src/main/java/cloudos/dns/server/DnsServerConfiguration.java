@@ -1,7 +1,7 @@
 package cloudos.dns.server;
 
-import cloudos.dns.config.DynDnsConfiguration;
 import cloudos.dns.service.DynDnsManager;
+import cloudos.server.DnsConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ public class DnsServerConfiguration extends RestServerConfiguration
 
     // only one of these should be defined
     @Getter @Setter private RootyConfiguration rooty;
-    @Getter @Setter private DynDnsConfiguration dyndns;
+    @Getter @Setter private DnsConfiguration dyndns;
 
     public DnsManager getDnsManager () {
         if (rooty == null && dyndns == null) die("neither rooty nor dyndns defined");

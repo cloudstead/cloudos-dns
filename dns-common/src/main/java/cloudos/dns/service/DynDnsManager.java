@@ -1,7 +1,7 @@
 package cloudos.dns.service;
 
 import cloudos.dns.DnsApiConstants;
-import cloudos.dns.config.DynDnsConfiguration;
+import cloudos.server.DnsConfiguration;
 import com.dyn.client.v3.traffic.DynTrafficApi;
 import com.dyn.client.v3.traffic.domain.CreateRecord;
 import com.dyn.client.v3.traffic.domain.Job;
@@ -35,7 +35,7 @@ import static org.cobbzilla.util.daemon.ZillaRuntime.die;
 @Slf4j
 public class DynDnsManager implements DnsManager {
 
-    private final DynDnsConfiguration config;
+    private final DnsConfiguration config;
     private final DynTrafficApi dyn;
 
     @Getter(value=AccessLevel.PROTECTED, lazy=true) private final RecordApi recordApi = initRecordApi();
@@ -44,7 +44,7 @@ public class DynDnsManager implements DnsManager {
     @Getter(value=AccessLevel.PROTECTED, lazy=true) private final ZoneApi zoneApi = initZoneApi();
     private ZoneApi initZoneApi() { return dyn.getZoneApi(); }
 
-    public DynDnsManager(DynDnsConfiguration config) {
+    public DynDnsManager(DnsConfiguration config) {
         this.config = config;
         // Configure/Authenticate the Dyn Java client instance
         final ProviderMetadata meta = Providers.withId("dyn-traffic");

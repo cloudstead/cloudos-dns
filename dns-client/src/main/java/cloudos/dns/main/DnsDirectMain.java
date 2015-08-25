@@ -1,8 +1,8 @@
 package cloudos.dns.main;
 
 import cloudos.dns.DnsClient;
-import cloudos.dns.config.DynDnsConfiguration;
 import cloudos.dns.service.DynDnsManager;
+import cloudos.server.DnsConfiguration;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -51,11 +51,11 @@ public class DnsDirectMain {
         final File configFile = options.getConfigFile();
         if (!configFile.exists()) die("env file does not exist: "+abs(configFile));
 
-        final DynDnsConfiguration config;
+        final DnsConfiguration config;
         if (options.hasConfigNode()) {
-            config = fromJson(configFile, options.getConfigNode(), DynDnsConfiguration.class);
+            config = fromJson(configFile, options.getConfigNode(), DnsConfiguration.class);
         } else {
-            config = fromJson(configFile, DynDnsConfiguration.class);
+            config = fromJson(configFile, DnsConfiguration.class);
         }
         if (!config.isValid()) die("config (" + abs(configFile) + ") is not valid. If connecting to Dyn, specify user, password, account and zone. If connecting to cloudos-dns, specify user, password, and base_uri");
 
