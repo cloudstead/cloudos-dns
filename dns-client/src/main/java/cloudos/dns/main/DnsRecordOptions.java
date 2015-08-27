@@ -9,9 +9,6 @@ import org.cobbzilla.util.dns.DnsType;
 import org.cobbzilla.util.string.ValidationRegexes;
 import org.kohsuke.args4j.Option;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.cobbzilla.util.daemon.ZillaRuntime.die;
@@ -70,7 +67,7 @@ public class DnsRecordOptions extends DnsMainOptionsBase {
         DnsRecordBase record;
         record = new DnsRecord()
                 .setTtl(getTtl())
-                .setOptions(getOptions())
+                .setOptionsString(getOptions())
                 .setType(getType())
                 .setFqdn(getFqdn())
                 .setValue(getValue());
