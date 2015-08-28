@@ -36,13 +36,15 @@ jersey:
   - org.cobbzilla.wizard.exceptionmappers
   responseFilters: [ org.cobbzilla.wizard.filters.ScrubbableScrubber ]
 
-{{#DNS_HANDLER}}
+serverType: {{DNS_MODE}}
+
+{{#DNS_DJBDNS}}
 rooty:
   queueName: {{ROOTY_QUEUE_NAME}} # matches where rooty reads from, defined in /etc/rooty/*.yml (from cloudstead chef recipe)
   secret: {{ROOTY_SECRET}}        # used to generate hashes in request filenames
   handlers:
     {{DNS_HANDLER}}:
-{{/DNS_HANDLER}}
+{{/DNS_DJBDNS}}
 
 {{#DNS_DYN}}
 dyndns:

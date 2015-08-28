@@ -35,7 +35,7 @@ import static org.cobbzilla.util.daemon.ZillaRuntime.die;
 @Slf4j
 public class DynDnsManager implements DnsManager {
 
-    private final DnsConfiguration config;
+    @Getter private DnsConfiguration config;
     private final DynTrafficApi dyn;
 
     @Getter(value=AccessLevel.PROTECTED, lazy=true) private final RecordApi recordApi = initRecordApi();
@@ -53,8 +53,7 @@ public class DynDnsManager implements DnsManager {
         dyn = ctx.buildApi(DynTrafficApi.class);
     }
 
-    @Override
-    public List<DnsRecord> list(DnsRecordMatch match) throws Exception {
+    @Override public List<DnsRecord> list(DnsRecordMatch match) throws Exception {
 
         if (match.hasFqdn() && match.hasSubdomain()) log.warn("both fqdn and subdomain defined -- ignoring fqdn");
 

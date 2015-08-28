@@ -6,7 +6,9 @@ import cloudos.dns.model.DnsAccount;
 import cloudos.dns.model.support.DnsSessionRequest;
 import cloudos.dns.model.support.DnsUserResponse;
 import cloudos.dns.server.DnsServerConfiguration;
+import cloudos.dns.service.DynDnsManager;
 import cloudos.dns.service.mock.MockDnsManager;
+import cloudos.server.DnsConfiguration;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.cobbzilla.util.dns.DnsManager;
@@ -45,7 +47,7 @@ public class MockDnsResource {
     @POST
     public Response startSession (DnsSessionRequest request) {
 
-        final String zone = configuration.getDyndns().getZone();
+        final String zone = getDyn().getZone();
 
         // strip zone suffix if present
         String user = request.getUser();
@@ -61,6 +63,10 @@ public class MockDnsResource {
         return Response.ok(sessionDAO.create(account)).build();
     }
 
+    protected DnsConfiguration getDyn() {
+        return ((DynDnsManager) configuration.getDnsManager()).getConfig();
+    }
+
     @POST
     @Path(DnsApiConstants.EP_USER + "/{name}")
     public Response createUser (@HeaderParam(DnsApiConstants.H_API_KEY) String apiKey,
@@ -71,7 +77,7 @@ public class MockDnsResource {
         if (!account.isAdmin()) return ResourceUtil.forbidden();
 
         name = name.toLowerCase();
-        final String zone = configuration.getDyndns().getZone();
+        final String zone = getDyn().getZone();
         if (name.endsWith(zone)) {
             name = name.substring(0, name.length()-zone.length()-1);
         }
@@ -100,7 +106,7 @@ public class MockDnsResource {
         final DnsAccount account = sessionDAO.find(apiKey);
         if (account == null) return ResourceUtil.forbidden();
 
-        if (!account.isAdmin()) match.setSubdomain(account.getName()+"."+configuration.getDyndns().getZone());
+        if (!account.isAdmin()) match.setSubdomain(account.getName()+"."+getDyn().getZone());
 
         try {
             return Response.ok(getDnsManager().list(match)).build();
@@ -120,7 +126,7 @@ public class MockDnsResource {
 
         // admins can modify anything. users can only modify records within their subdomain (their username)
         if (!account.isAdmin()) {
-            if (!record.getFqdn().endsWith(account.getName() + "." + configuration.getDyndns().getZone())) {
+            if (!record.getFqdn().endsWith(account.getName() + "." + getDyn().getZone())) {
                 return ResourceUtil.forbidden();
             }
         }
@@ -149,7 +155,7 @@ public class MockDnsResource {
         final DnsAccount account = sessionDAO.find(apiKey);
         if (account == null) return ResourceUtil.forbidden();
 
-        if (!account.isAdmin()) match.setSubdomain(account.getName()+"."+configuration.getDyndns().getZone());
+        if (!account.isAdmin()) match.setSubdomain(account.getName()+"."+getDyn().getZone());
 
         try {
             final DnsManager dnsManager = getDnsManager();
