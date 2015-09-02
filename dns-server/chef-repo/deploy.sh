@@ -74,16 +74,13 @@ if [ -z "${REQUIRED}" ] ; then
 data_bags/cloudos-dns/init.json \
 data_bags/cloudos-dns/ports.json \
 data_bags/djbdns/init.json \
-certs/cloudos/ssl-https.key \
-certs/cloudos/ssl-https.pem \
+certs/cloudos-dns/ssl-https.key \
+certs/cloudos-dns/ssl-https.pem \
 "
 fi
 
 if [ -z "${COOKBOOK_SOURCES}" ] ; then
-  COOKBOOK_SOURCES=" \
-${CLOUDOS_BASE}/cloudos-lib/chef-repo/cookbooks \
-$(find ${CLOUDOS_BASE}/cloudos-apps/apps -type d -name cookbooks) \
-"
+  COOKBOOK_SOURCES="$(find ${CLOUDOS_BASE}/cloudos-apps/apps -type d -name cookbooks)"
 fi
 
 ${DEPLOYER} ${host} ${INIT_FILES} "${REQUIRED}" "${COOKBOOK_SOURCES}" ${SOLO_JSON} ${MODE}

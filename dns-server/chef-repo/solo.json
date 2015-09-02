@@ -2,8 +2,8 @@
   "run_list": [
     "recipe[base]",
 
-    "recipe[apache]", "recipe[postgresql]",
-    "recipe[java]", "recipe[git]",
+    "recipe[apache]", "recipe[apache-root]",
+    "recipe[postgresql]", "recipe[java]", "recipe[git]",
 
     "recipe[kestrel]",
 
