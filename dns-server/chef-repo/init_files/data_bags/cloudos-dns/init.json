@@ -1,0 +1,20 @@
+{
+    "id": "init",
+
+    "server_tarball": "http://cloudstead.io/downloads/cloudos-dns-server.tar.gz",
+    "server_shasum": "a13a793ece260e4425a0d65e3b0151a0a31ab5348a93146c093a56eccfd8be49",
+
+    "admin": {
+        "name": "cloudos-dns-admin",
+        "password": "bcrypted-password"
+    },
+
+    "server_type": "some-type",  // use 'djbdns' or 'dyn'
+
+    "dyn": {    // omit if using djbdns
+        "account": "your-dyndns-account",
+        "user": "a-dyndns-user-account",
+        "password": "password",
+        "zone": "example.com"
+    }
+}

@@ -21,8 +21,11 @@ public class CloudOsDnsDatabag extends InitDatabag {
     public static File getChefFile(File dir) { return getChefFile(CloudOsDnsDatabag.class, dir, APP); }
     public void toChefRepo(File dir) { toChefRepo(dir, APP); }
 
+    @Getter @Setter private String server_tarball;
+    @Getter @Setter private String server_shasum;
+
     @Getter @Setter private NameAndPassword admin;
     @Getter @Setter private DnsServerType server_type;
-    @Getter @Setter private DnsConfiguration dns;
+    @Getter @Setter private DnsConfiguration dyn;
 
 }

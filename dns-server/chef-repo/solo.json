@@ -1,0 +1,16 @@
+{
+  "run_list": [
+    "recipe[base]",
+
+    "recipe[apache]", "recipe[postgresql]",
+    "recipe[java]", "recipe[git]",
+
+    "recipe[kestrel]",
+
+    "recipe[djbdns]", // exclude this if you are connecting cloudos-dns to external DNS (like Dyn)
+
+    "recipe[cloudos-dns]",
+
+    "recipe[cloudos-dns::validate]"
+  ]
+}

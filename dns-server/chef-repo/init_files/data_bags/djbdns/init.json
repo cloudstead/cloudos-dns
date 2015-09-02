@@ -1,0 +1,4 @@
+{
+  "id": "init",
+  "allow_axfr": "space separated list of IP addresses to allow AXFR requests from"
+}
