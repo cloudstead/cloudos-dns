@@ -74,8 +74,8 @@ if [ -z "${REQUIRED}" ] ; then
 data_bags/cloudos-dns/init.json \
 data_bags/cloudos-dns/ports.json \
 data_bags/djbdns/init.json \
-certs/cloudos-dns/ssl-https.key \
-certs/cloudos-dns/ssl-https.pem \
+certs/apache-root/ssl-https.key \
+certs/apache-root/ssl-https.pem \
 "
 fi
 
