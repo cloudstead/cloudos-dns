@@ -67,7 +67,7 @@ public class DnsRecordOptions extends DnsMainOptionsBase {
         DnsRecordBase record;
         record = new DnsRecord()
                 .setTtl(getTtl())
-                .setOptionsString(getOptions())
+                .setOptions_string(getOptions())
                 .setType(getType())
                 .setFqdn(getFqdn())
                 .setValue(getValue());
