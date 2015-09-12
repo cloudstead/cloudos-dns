@@ -15,7 +15,8 @@ BASE_MOCK_RESOURCE="${TEST_CLASSES}/${MOCK_RESOURCE}"
 if [[ $(ls ${JAR} | wc -l | tr -d ' ')  -eq 0  ]] || [[ ! -f ${BASE_MOCK_RESOURCE} ]] ; then
 echo "not found: ${BASE_MOCK_RESOURCE} or ${JAR}" && exit 1
   pushd ${BASE}/..
-  mvn -DskipTests=true package test || die "Error building cloudos-dns-server jar"
+  MAVEN="mvn -DskipTests=true -Dcheckstyle.skip=true"
+  ${MAVEN} package test || die "Error building cloudos-dns-server jar"
   popd
 fi
 if [[ $(ls ${JAR} | wc -l | tr -d ' ')  -eq 0  ]] || [[ ! -f ${BASE_MOCK_RESOURCE} ]] ; then
