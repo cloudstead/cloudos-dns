@@ -30,7 +30,11 @@ public class DnsDirectMain {
 
     public static void main (String[] args) throws Exception {
         final DnsDirectMain dnsMain = new DnsDirectMain();
-        if (dnsMain.init(args)) dnsMain.run();
+        if (dnsMain.init(args)) {
+            dnsMain.run();
+        } else {
+            System.exit(1);
+        }
     }
 
     public boolean init(String[] args) {
