@@ -40,7 +40,7 @@ serverType: {{DNS_MODE}}
 #  handlers:
 #    rooty.toots.djbdns.DnsHandler:
 
-dyndns:
+dyn:
   account: {{DYNDNS_ACCOUNT}}
   user: {{DYNDNS_USER}}
   password: {{DYNDNS_PASSWORD}}

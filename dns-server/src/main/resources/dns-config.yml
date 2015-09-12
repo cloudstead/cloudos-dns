@@ -47,7 +47,7 @@ rooty:
 {{/DNS_DJBDNS}}
 
 {{#DNS_DYN}}
-dyndns:
+dyn:
   account: {{DYNDNS_ACCOUNT}}
   user: {{DYNDNS_USER}}
   password: {{DYNDNS_PASSWORD}}
