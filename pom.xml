@@ -66,14 +66,7 @@ For commercial use, please contact cloudstead.io
         <dependency>
             <groupId>com.dyn</groupId>
             <artifactId>dyn-client</artifactId>
-            <version>1.0.0</version>
-            <exclusions>
-                <!-- cloudos-lib already depends on jclouds and guava, use those versions -->
-                <exclusion>
-                    <groupId>org.apache.jclouds</groupId>
-                    <artifactId>jclouds-core</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>${jclouds.version}</version>
         </dependency>
 
         <dependency>

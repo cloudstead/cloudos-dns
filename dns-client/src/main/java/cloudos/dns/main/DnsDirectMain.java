@@ -49,7 +49,7 @@ public class DnsDirectMain {
     public void run () throws Exception {
 
         final File configFile = options.getConfigFile();
-        if (!configFile.exists()) die("env file does not exist: "+abs(configFile));
+        if (!configFile.exists()) die("config file does not exist: "+abs(configFile));
 
         final DnsConfiguration config;
         if (options.hasConfigNode()) {
@@ -57,8 +57,10 @@ public class DnsDirectMain {
         } else {
             config = fromJson(configFile, DnsConfiguration.class);
         }
-        if (!config.isValid()) die("config (" + abs(configFile) + ") is not valid. If connecting to Dyn, specify user, password, account and zone. If connecting to cloudos-dns, specify user, password, and base_uri");
-
+        if (!config.isValid()) {
+            System.err.println("config (" + abs(configFile) + ") is not valid. If connecting to Dyn, specify user, password, account and zone. If connecting to cloudos-dns, specify user, password, and base_uri");
+            return;
+        }
         if (!config.isEnabled()) {
             System.err.println("config indicates DNS is disabled, exiting");
             return;

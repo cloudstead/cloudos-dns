@@ -221,7 +221,7 @@ public class DnsResource {
             return ok(updated);
 
         } catch (Exception e) {
-            log.error("Error writing record: "+e, e);
+            log.error("Error writing record ("+record+"): "+e, e);
             return serverError();
         }
     }

@@ -10,6 +10,8 @@ import static org.cobbzilla.util.daemon.ZillaRuntime.empty;
 
 public class DnsDirectMainOptions extends DnsRecordOptions {
 
+    @Override protected boolean requireAccount() { return false; }
+
     public static final String USAGE_CONFIG_FILE = "The JSON config file to source. Should be a single JSON object with fields for user, password, account, zone, and baseUri";
     public static final String OPT_CONFIG_FILE = "-c";
     public static final String LONGOPT_CONFIG_FILE = "--config";
