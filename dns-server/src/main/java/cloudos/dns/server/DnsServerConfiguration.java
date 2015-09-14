@@ -2,7 +2,7 @@ package cloudos.dns.server;
 
 import cloudos.databag.DnsMode;
 import org.cobbzilla.util.dns.DnsServerType;
-import cloudos.dns.service.DynDnsManager;
+import cloudos.dns.service.dyn.DynDnsManager;
 import cloudos.server.DnsConfiguration;
 import lombok.Getter;
 import lombok.Setter;

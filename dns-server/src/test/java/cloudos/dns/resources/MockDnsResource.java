@@ -6,7 +6,7 @@ import cloudos.dns.model.DnsAccount;
 import cloudos.dns.model.support.DnsSessionRequest;
 import cloudos.dns.model.support.DnsUserResponse;
 import cloudos.dns.server.DnsServerConfiguration;
-import cloudos.dns.service.DynDnsManager;
+import cloudos.dns.service.dyn.DynDnsManager;
 import cloudos.dns.service.mock.MockDnsManager;
 import cloudos.server.DnsConfiguration;
 import lombok.Getter;

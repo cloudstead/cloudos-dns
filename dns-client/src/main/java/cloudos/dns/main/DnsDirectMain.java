@@ -1,7 +1,7 @@
 package cloudos.dns.main;
 
 import cloudos.dns.DnsClient;
-import cloudos.dns.service.DynDnsManager;
+import cloudos.dns.service.dyn.DynDnsManager;
 import cloudos.server.DnsConfiguration;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

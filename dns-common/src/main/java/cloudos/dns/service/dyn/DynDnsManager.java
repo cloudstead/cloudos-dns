@@ -1,15 +1,13 @@
-package cloudos.dns.service;
+package cloudos.dns.service.dyn;
 
 import cloudos.dns.DnsApiConstants;
 import cloudos.server.DnsConfiguration;
-import com.dyn.client.v3.traffic.DynTrafficApi;
 import com.dyn.client.v3.traffic.domain.CreateRecord;
 import com.dyn.client.v3.traffic.domain.Job;
 import com.dyn.client.v3.traffic.domain.Record;
 import com.dyn.client.v3.traffic.domain.RecordId;
 import com.dyn.client.v3.traffic.domain.rdata.*;
 import com.dyn.client.v3.traffic.features.RecordApi;
-import com.dyn.client.v3.traffic.features.ZoneApi;
 import com.google.common.collect.FluentIterable;
 import com.jayway.jsonpath.JsonPath;
 import lombok.Getter;
@@ -19,11 +17,9 @@ import org.cobbzilla.util.dns.DnsManager;
 import org.cobbzilla.util.dns.DnsRecord;
 import org.cobbzilla.util.dns.DnsRecordMatch;
 import org.cobbzilla.util.dns.DnsType;
-import org.jclouds.ContextBuilder;
 import org.jclouds.http.HttpResponseException;
-import org.jclouds.providers.ProviderMetadata;
-import org.jclouds.providers.Providers;
 
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,22 +31,13 @@ import static org.cobbzilla.util.daemon.ZillaRuntime.die;
 public class DynDnsManager implements DnsManager {
 
     @Getter private DnsConfiguration config;
-    private final DynTrafficApi dyn;
-
-    private RecordApi getRecordApi() { return dyn.getRecordApiForZone(config.getZone()); }
-    private ZoneApi getZoneApi() { return dyn.getZoneApi(); }
+    @Getter private DynRecordApi recordApi;
+    @Getter private final DynZoneApi zoneApi;
 
     public DynDnsManager(DnsConfiguration config) {
         this.config = config;
-        this.dyn = setupApi();
-    }
-
-    protected DynTrafficApi setupApi() {
-        // Configure/Authenticate the Dyn Java client instance
-        final ProviderMetadata meta = Providers.withId("dyn-traffic");
-        final ContextBuilder ctx = ContextBuilder.newBuilder(meta);
-        ctx.credentials(config.getAccount() + ":" + config.getUser(), config.getPassword());
-        return ctx.buildApi(DynTrafficApi.class);
+        this.recordApi = new DynRecordApi(config);
+        this.zoneApi = new DynZoneApi(config);
     }
 
     @Override public List<DnsRecord> list(DnsRecordMatch match) throws Exception {
@@ -153,7 +140,7 @@ public class DynDnsManager implements DnsManager {
             }
             return true;
 
-        } catch (HttpResponseException e) {
+        } catch (Exception e) {
             if (isDuplicateRecordException(e)) {
                 log.info("Duplicate record, silently not failing but leaving record as is. update="+record+", existing="+existing);
                 return false;
@@ -163,7 +150,24 @@ public class DynDnsManager implements DnsManager {
         }
     }
 
-    public static boolean isDuplicateRecordException(HttpResponseException e) {
+    public static boolean isDuplicateRecordException(Exception ex) {
+
+        final HttpResponseException e;
+        if (ex instanceof HttpResponseException) {
+            e = (HttpResponseException) ex;
+        } else if (ex instanceof UndeclaredThrowableException) {
+            final Throwable t = ((UndeclaredThrowableException) ex).getUndeclaredThrowable();
+            if (t instanceof HttpResponseException) {
+                e = (HttpResponseException) t;
+            } else if (t.getCause() instanceof HttpResponseException) {
+                e = (HttpResponseException) t.getCause();
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
         final String json = e.getContent();
         try {
             return e.getResponse().getStatusCode() == 400
@@ -176,7 +180,7 @@ public class DynDnsManager implements DnsManager {
     }
 
     @Override public void publish() throws Exception {
-        log.info("publish: " + dyn.getZoneApi().publish(config.getZone()));
+        log.info("publish: " + getZoneApi().publish(config.getZone()));
     }
 
     @Override public int remove(DnsRecordMatch match) throws Exception {
