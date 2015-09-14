@@ -12,7 +12,6 @@ import com.dyn.client.v3.traffic.features.RecordApi;
 import com.dyn.client.v3.traffic.features.ZoneApi;
 import com.google.common.collect.FluentIterable;
 import com.jayway.jsonpath.JsonPath;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
@@ -38,25 +37,25 @@ public class DynDnsManager implements DnsManager {
     @Getter private DnsConfiguration config;
     private final DynTrafficApi dyn;
 
-    @Getter(value=AccessLevel.PROTECTED, lazy=true) private final RecordApi recordApi = initRecordApi();
-    private RecordApi initRecordApi() { return dyn.getRecordApiForZone(config.getZone()); }
-
-    @Getter(value=AccessLevel.PROTECTED, lazy=true) private final ZoneApi zoneApi = initZoneApi();
-    private ZoneApi initZoneApi() { return dyn.getZoneApi(); }
+    private RecordApi getRecordApi() { return dyn.getRecordApiForZone(config.getZone()); }
+    private ZoneApi getZoneApi() { return dyn.getZoneApi(); }
 
     public DynDnsManager(DnsConfiguration config) {
         this.config = config;
+        this.dyn = setupApi();
+    }
+
+    protected DynTrafficApi setupApi() {
         // Configure/Authenticate the Dyn Java client instance
         final ProviderMetadata meta = Providers.withId("dyn-traffic");
         final ContextBuilder ctx = ContextBuilder.newBuilder(meta);
-        ctx.credentials(config.getAccount()+":"+config.getUser(), config.getPassword());
-        dyn = ctx.buildApi(DynTrafficApi.class);
+        ctx.credentials(config.getAccount() + ":" + config.getUser(), config.getPassword());
+        return ctx.buildApi(DynTrafficApi.class);
     }
 
     @Override public List<DnsRecord> list(DnsRecordMatch match) throws Exception {
 
         if (match.hasFqdn() && match.hasSubdomain()) log.warn("both fqdn and subdomain defined -- ignoring fqdn");
-
         final RecordApi api = getRecordApi();
         final FluentIterable<RecordId> ids = match.hasFqdn() ? api.listByFQDN(match.getFqdn()) : api.list();
 
