@@ -19,7 +19,7 @@ import static org.cobbzilla.util.daemon.ZillaRuntime.die;
 public abstract class DynApiProxy<T> implements InvocationHandler {
 
     protected final DnsConfiguration config;
-    protected final AtomicReference<DynTrafficApi> dyn = new AtomicReference<>();
+    protected static final AtomicReference<DynTrafficApi> dyn = new AtomicReference<>();
 
     @Setter private T realApi = null;
 
@@ -42,10 +42,10 @@ public abstract class DynApiProxy<T> implements InvocationHandler {
                     final ContextBuilder ctx = ContextBuilder.newBuilder(meta);
                     ctx.credentials(config.getAccount() + ":" + config.getUser(), config.getPassword());
                     dyn.set(ctx.buildApi(DynTrafficApi.class));
-                    initApi(dyn.get());
                 }
             }
         }
+        initApi(dyn.get());
         return dyn.get();
     }
 
@@ -56,17 +56,19 @@ public abstract class DynApiProxy<T> implements InvocationHandler {
         return initApi();
     }
 
-    @Override public synchronized Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        try {
-            return method.invoke(getRealApi(), args);
+    @Override public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        synchronized (dyn) {
+            try {
+                return method.invoke(getRealApi(), args);
 
-        } catch (HttpResponseException e) {
-            if (e.getMessage().contains("inactivity logout")) {
-                log.warn(method.getName() + ": inactivity logout, will rebuild API and retry once");
-                resetApi();
-                return method.invoke(proxy, args);
-            } else {
-                throw e;
+            } catch (HttpResponseException e) {
+                if (e.getMessage().contains("inactivity logout")) {
+                    log.warn(method.getName() + ": inactivity logout, will rebuild API and retry once");
+                    resetApi();
+                    return method.invoke(proxy, args);
+                } else {
+                    throw e;
+                }
             }
         }
     }
