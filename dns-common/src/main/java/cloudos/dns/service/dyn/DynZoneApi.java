@@ -14,6 +14,6 @@ public class DynZoneApi extends DynApiProxy<ZoneApi> implements ZoneApi {
 
     public DynZoneApi(DnsConfiguration config) { super(config); }
 
-    @Override protected void initApi(DynTrafficApi api) { setRealApi(dyn.get().getZoneApi()); }
+    @Override protected ZoneApi getRealApi(DynTrafficApi api) { return dyn.get().getZoneApi(); }
 
 }

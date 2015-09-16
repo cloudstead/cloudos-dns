@@ -16,8 +16,8 @@ public class DynRecordApi extends DynApiProxy<RecordApi> implements RecordApi {
 
     public DynRecordApi(DnsConfiguration config) { super(config); }
 
-    @Override protected void initApi(DynTrafficApi api) {
-        setRealApi(api.getRecordApiForZone(config.getZone()));
+    @Override protected RecordApi getRealApi(DynTrafficApi api) {
+        return api.getRecordApiForZone(config.getZone());
     }
 
 }
